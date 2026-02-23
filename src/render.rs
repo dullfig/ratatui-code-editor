@@ -23,21 +23,22 @@ impl Widget for &Editor {
         let code = self.code_ref();
         let total_lines = code.len_lines();
         let total_chars = code.len_chars();
-        let max_line_number = total_lines.max(1);
-        let line_number_digits = max_line_number.to_string().len().max(5);
-        let line_number_width = line_number_digits + 2;
+        let line_number_width = self.line_number_width();
 
         let mut draw_y = area.top();
-        
+
         let line_number_style = Style::default().fg(Color::DarkGray);
         let default_text_style = Style::default().fg(Color::White);
 
         // draw line numbers and text
         for line_idx in self.offset_y..total_lines {
             if draw_y >= area.bottom() { break }
-        
-            let line_number = format!("{:^width$}", line_idx + 1, width = line_number_digits);
-            buf.set_string(area.left(), draw_y, &line_number, line_number_style);
+
+            if self.show_line_numbers {
+                let line_number_digits = line_number_width.saturating_sub(2);
+                let line_number = format!("{:^width$}", line_idx + 1, width = line_number_digits);
+                buf.set_string(area.left(), draw_y, &line_number, line_number_style);
+            }
         
             let line_len = code.line_len(line_idx);
             let max_x = (area.width as usize).saturating_sub(line_number_width);

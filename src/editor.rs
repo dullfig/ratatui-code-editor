@@ -59,6 +59,9 @@ pub struct Editor {
 
     /// Syntax highlight cache by intervals to speed up rendering
     pub(crate) highlights_cache: RefCell<HightlightCache>,
+
+    /// Whether to display line numbers in the gutter (default: true)
+    pub(crate) show_line_numbers: bool,
 }
 
 impl Editor {
@@ -90,7 +93,25 @@ impl Editor {
             clipboard: None,
             marks: None,
             highlights_cache,
+            show_line_numbers: true,
         })
+    }
+
+    /// Toggle line number display. When false, the gutter is hidden.
+    pub fn set_show_line_numbers(&mut self, show: bool) {
+        self.show_line_numbers = show;
+    }
+
+    /// Compute the line number gutter width in characters.
+    /// Returns 0 when line numbers are hidden.
+    pub(crate) fn line_number_width(&self) -> usize {
+        if !self.show_line_numbers {
+            return 0;
+        }
+        let total_lines = self.code.len_lines();
+        let max_line_number = total_lines.max(1);
+        let line_number_digits = max_line_number.to_string().len().max(5);
+        line_number_digits + 2
     }
 
     pub fn input(
@@ -131,10 +152,7 @@ impl Editor {
     pub fn focus(&mut self, area: &Rect) {
         let width = area.width as usize;
         let height = area.height as usize;
-        let total_lines = self.code.len_lines();
-        let max_line_number = total_lines.max(1);
-        let line_number_digits = max_line_number.to_string().len().max(5);
-        let line_number_width = (line_number_digits + 2) as usize;
+        let line_number_width = self.line_number_width();
 
         let line = self.code.char_to_line(self.cursor);
         let col = self.cursor - self.code.line_to_char(line);
@@ -248,10 +266,7 @@ impl Editor {
     fn cursor_from_mouse(
         &self, mouse_x: u16, mouse_y: u16, area: &Rect
     ) -> Option<usize> {
-        let total_lines = self.code.len_lines();
-        let max_line_number = total_lines.max(1);
-        let line_number_digits = max_line_number.to_string().len().max(5);
-        let line_number_width = (line_number_digits + 2) as u16;
+        let line_number_width = self.line_number_width() as u16;
     
         if mouse_y < area.top()
             || mouse_y >= area.bottom()
@@ -522,10 +537,7 @@ impl Editor {
     pub fn get_visible_cursor(
         &self, area: &Rect
     ) -> Option<(u16, u16)> {
-        let total_lines = self.code.len_lines();
-        let max_line_number = total_lines.max(1);
-        let line_number_digits = max_line_number.to_string().len().max(5);
-        let line_number_width = line_number_digits + 2;
+        let line_number_width = self.line_number_width();
 
         let (cursor_line, cursor_char_col) = self.code.point(self.cursor);
         
