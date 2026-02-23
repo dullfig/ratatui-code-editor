@@ -117,6 +117,7 @@ impl Editor {
             KeyCode::Up        => self.apply(MoveUp { shift }),
             KeyCode::Down      => self.apply(MoveDown { shift }),
             KeyCode::Backspace => self.apply(Delete { }),
+            KeyCode::Delete    => self.apply(ForwardDelete { }),
             KeyCode::Enter     => self.apply(InsertNewline { }),
             KeyCode::Char(c)   => self.apply(InsertText { text: c.to_string() }),
             KeyCode::Tab       => self.apply(Indent { }),

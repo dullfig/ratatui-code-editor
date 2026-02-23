@@ -516,6 +516,41 @@ impl Action for UnIndent {
     }
 }
 
+/// Deletes the character after the cursor (forward delete).
+///
+/// - If there is a non-empty selection, deletes the selection.
+/// - If there is no selection, deletes the next character.
+pub struct ForwardDelete;
+
+impl Action for ForwardDelete {
+    fn apply(&mut self, editor: &mut Editor) {
+        let mut cursor = editor.get_cursor();
+        let mut selection = editor.get_selection();
+
+        let code = editor.code_mut();
+        code.tx();
+        code.set_state_before(cursor, selection);
+
+        if let Some(sel) = &selection && !sel.is_empty() {
+            // Delete selection
+            let (start, end) = sel.sorted();
+            code.remove(start, end);
+            cursor = start;
+            selection = None;
+        } else if cursor < code.len() {
+            // Delete the character after the cursor
+            code.remove(cursor, cursor + 1);
+        }
+
+        code.set_state_after(cursor, selection);
+        code.commit();
+
+        editor.set_cursor(cursor);
+        editor.set_selection(selection);
+        editor.reset_highlight_cache();
+    }
+}
+
 /// Selects the entire text in the editor.
 pub struct SelectAll;
 
