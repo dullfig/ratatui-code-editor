@@ -176,6 +176,14 @@ impl Code {
         line_start + col
     }
     
+    pub fn tree(&self) -> Option<&Tree> {
+        self.tree.as_ref()
+    }
+
+    pub fn rope(&self) -> &Rope {
+        &self.content
+    }
+
     pub fn get_content(&self) -> String {
         self.content.to_string()
     }
