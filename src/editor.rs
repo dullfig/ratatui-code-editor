@@ -146,13 +146,13 @@ impl Editor {
         if col < self.offset_x {
             self.offset_x = col.saturating_sub(step_size);
         } else if col >= self.offset_x + visible_width {
-            self.offset_x = col.saturating_sub(visible_width - step_size);
+            self.offset_x = col.saturating_sub(visible_width.saturating_sub(step_size));
         }
-    
+
         if line < self.offset_y {
             self.offset_y = line;
         } else if line >= self.offset_y + visible_height {
-            self.offset_y = line.saturating_sub(visible_height - 1);
+            self.offset_y = line.saturating_sub(visible_height.saturating_sub(1));
         }
     }
 
