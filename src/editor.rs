@@ -330,8 +330,13 @@ impl Editor {
         self.code.set_state_before(self.cursor, self.selection);
         self.code.remove(0, self.code.len());
         self.code.insert(0, content);
-        self.code.set_state_after(self.cursor, self.selection);
+        let new_len = self.code.len_chars();
+        self.code.set_state_after(new_len, None);
         self.code.commit();
+        self.cursor = new_len;
+        self.selection = None;
+        self.offset_x = 0;
+        self.offset_y = 0;
         self.reset_highlight_cache();
     }
 
