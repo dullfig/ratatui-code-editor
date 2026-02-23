@@ -7,21 +7,8 @@ pub fn get_lang(filename: &str) -> String {
 
     match extension {
         "rs" => "rust",
-        "js" | "jsx"  => "javascript",
-        "ts" | "tsx"=> "typescript",
         "py" => "python",
-        "go" => "go",
-        "java" => "java",
-        "cpp"  => "cpp",
-        "c" => "c",
-        "cs" => "c_sharp",
-        "html" => "html",
-        "css" => "css",
-        "json" => "json",
-        "toml" => "toml",
         "yaml" | "yml" => "yaml",
-        "sh" | "bash" => "shell",
-        "md" => "markdown",
         _ => "unknown",
     }
     .to_string()

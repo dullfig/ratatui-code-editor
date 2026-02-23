@@ -112,22 +112,8 @@ impl Code {
     fn get_language(lang: &str) -> Option<Language> {
         match lang {
             "rust" => Some(tree_sitter_rust::LANGUAGE.into()),
-            "javascript" => Some(tree_sitter_javascript::LANGUAGE.into()),
-            "typescript" => Some(tree_sitter_typescript::LANGUAGE_TYPESCRIPT.into()),
             "python" => Some(tree_sitter_python::LANGUAGE.into()),
-            "go" => Some(tree_sitter_go::LANGUAGE.into()),
-            "java" => Some(tree_sitter_java::LANGUAGE.into()),
-            "c_sharp" => Some(tree_sitter_c_sharp::LANGUAGE.into()),
-            "c" => Some(tree_sitter_c::LANGUAGE.into()),
-            "cpp" => Some(tree_sitter_cpp::LANGUAGE.into()),
-            "html" => Some(tree_sitter_html::LANGUAGE.into()),
-            "css" => Some(tree_sitter_css::LANGUAGE.into()),
             "yaml" => Some(tree_sitter_yaml::LANGUAGE.into()),
-            "json" => Some(tree_sitter_json::LANGUAGE.into()),
-            "toml" => Some(tree_sitter_toml_ng::LANGUAGE.into()),
-            "shell" => Some(tree_sitter_bash::LANGUAGE.into()),
-            "markdown" => Some(tree_sitter_md::LANGUAGE.into()),
-            "markdown-inline" => Some(tree_sitter_md::INLINE_LANGUAGE.into()),
             _ => None,
         }
     }
