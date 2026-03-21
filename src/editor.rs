@@ -62,6 +62,10 @@ pub struct Editor {
 
     /// Whether to display line numbers in the gutter (default: true)
     pub(crate) show_line_numbers: bool,
+
+    /// Ghost text to display after the cursor (e.g., completion suggestion).
+    /// Rendered in dark gray, accepted with Tab.
+    pub(crate) ghost_text: Option<String>,
 }
 
 impl Editor {
@@ -94,6 +98,7 @@ impl Editor {
             marks: None,
             highlights_cache,
             show_line_numbers: true,
+            ghost_text: None,
         })
     }
 
@@ -498,6 +503,30 @@ impl Editor {
 
     pub fn get_offset_x(&self) -> usize {
         self.offset_x
+    }
+
+    /// Set ghost text to display after the cursor (completion suggestion).
+    /// Pass `None` to clear.
+    pub fn set_ghost_text(&mut self, text: Option<String>) {
+        self.ghost_text = text;
+    }
+
+    /// Get the current ghost text, if any.
+    pub fn ghost_text(&self) -> Option<&str> {
+        self.ghost_text.as_deref()
+    }
+
+    /// Accept the ghost text: insert it at the cursor and clear it.
+    /// Returns true if ghost text was accepted, false if there was none.
+    pub fn accept_ghost_text(&mut self) -> bool {
+        if let Some(text) = self.ghost_text.take() {
+            self.code.insert(self.cursor, &text);
+            self.cursor += text.len();
+            self.highlights_cache.borrow_mut().clear();
+            true
+        } else {
+            false
+        }
     }
 
     pub fn code_mut(&mut self) -> &mut Code {

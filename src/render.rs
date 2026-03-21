@@ -234,5 +234,29 @@ impl Widget for &Editor {
                 }
             }
         }
+
+        // draw ghost text (completion suggestion after cursor)
+        if let Some(ref ghost) = self.ghost_text {
+            let (cursor_line, cursor_col) = code.point(self.cursor);
+            if cursor_line >= self.offset_y
+                && cursor_line < self.offset_y + area.height as usize
+            {
+                let draw_y = area.top() + (cursor_line - self.offset_y) as u16;
+
+                // Calculate visual x position of cursor
+                let visible_col = cursor_col.saturating_sub(self.offset_x);
+                let text_x = area.left() + line_number_width as u16 + visible_col as u16;
+
+                // Only render if cursor is in the visible viewport
+                if text_x < area.right() && cursor_col >= self.offset_x {
+                    let ghost_style = Style::default().fg(Color::DarkGray);
+                    let max_width = (area.right() - text_x) as usize;
+                    // Take only first line of ghost text, truncate to available width
+                    let first_line = ghost.lines().next().unwrap_or("");
+                    let display: String = first_line.chars().take(max_width).collect();
+                    buf.set_string(text_x, draw_y, &display, ghost_style);
+                }
+            }
+        }
     }
 }

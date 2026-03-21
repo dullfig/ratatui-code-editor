@@ -205,9 +205,25 @@ impl Action for InsertNewline {
 
         // 2. Compute indentation for the new line
         let indent_level = code.indentation_level(row, col);
-        let indent_text = code.indent().repeat(indent_level);
+        let indent_unit = code.indent();
 
-        // 3. Prepare the text to insert
+        // 3. Check if the line before cursor ends with a block opener (: { [)
+        //    If so, increase indent by one level (smart indent for Python, Rust, etc.)
+        let line = code.line(row).to_string();
+        let before_cursor = &line[..col.min(line.len())];
+        let trimmed = before_cursor.trim_end();
+        let extra = if trimmed.ends_with(':')
+            || trimmed.ends_with('{')
+            || trimmed.ends_with('[')
+            || trimmed.ends_with('(')
+        {
+            1
+        } else {
+            0
+        };
+        let indent_text = indent_unit.repeat(indent_level + extra);
+
+        // 4. Prepare the text to insert
         let text_to_insert = format!("\n{}", indent_text);
 
         // 4. Use InsertText action to insert the text
